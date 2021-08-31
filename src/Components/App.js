@@ -73,51 +73,32 @@ export default function App() {
 
   const toggleModal = () => {
     setShowModal(prevState => !prevState);
-    // this.setState(({ showModal }) => ({ showModal: !showModal }));
   };
 
-  if (status === 'idle') {
-    return <Searchbar onSubmit={handleFormSubmit} />;
-  }
+  return (
+    <div>
+      <Searchbar onSubmit={handleFormSubmit} />;
+      {status === 'pending' && <Loader />}
+      {status === 'rejected' && error && <h1>{error.message}</h1>}
+      {status === 'resolved' && (
+        <>
+          <ImageGallery
+            hits={hits}
+            toggleModal={toggleModal}
+            handleSetLargeImageURL={handleSetLargeImageURL}
+          />
+          {hits.length >= 12 && hits.length < totalHits && (
+            <Button onClick={handleLoadMore} />
+          )}
+          {hits.length === 0 && <h1>по запросу {query} ничего не найдено</h1>}
 
-  if (status === 'pending') {
-    return (
-      <>
-        <Searchbar onSubmit={handleFormSubmit} />
-        <Loader />
-      </>
-    );
-  }
-
-  if (status === 'rejected') {
-    return (
-      <>
-        <Searchbar onSubmit={handleFormSubmit} />
-        {error && <h1>{error.message}</h1>}
-      </>
-    );
-  }
-
-  if (status === 'resolved') {
-    return (
-      <>
-        <Searchbar onSubmit={handleFormSubmit} />
-        <ImageGallery
-          hits={hits}
-          toggleModal={toggleModal}
-          handleSetLargeImageURL={handleSetLargeImageURL}
-        />
-        {hits.length >= 12 && hits.length < totalHits && (
-          <Button onClick={handleLoadMore} />
-        )}
-        {hits.length === 0 && <h1>по запросу {query} ничего не найдено</h1>}
-
-        {showModal && (
-          <Modal onClose={toggleModal}>
-            <img src={largeImageURL} alt={tags} />
-          </Modal>
-        )}
-      </>
-    );
-  }
+          {showModal && (
+            <Modal onClose={toggleModal}>
+              <img src={largeImageURL} alt={tags} />
+            </Modal>
+          )}
+        </>
+      )}
+    </div>
+  );
 }
